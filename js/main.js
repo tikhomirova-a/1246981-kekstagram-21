@@ -10,6 +10,8 @@ const COMMENT_NUMBER_MIN = 0;
 const COMMENT_NUMBER_MAX = 5;
 const COMMENT_AUTHOR_MIN = 0;
 const COMMENT_AUTHOR_MAX = 5;
+const COMMENTS_AMOUNT_MAX = 10;
+const COMMENTS_AMOUNT_MIN = 0;
 
 const generateRandom = (min, max, arr) => {
   min = Math.ceil(min);
@@ -35,17 +37,17 @@ const shuffle = (arr) => {
   return arr;
 };
 
-const generateNonRepeatingRandom = (min, max) => {
+const generateNumbers = (min, max) => {
   let numbers = [];
   for (let i = min; i <= max; i++) {
     numbers.push(i);
   }
   shuffle(numbers);
-  let randomNumber = numbers[0];
-  for (let i = numbers.length - 1; i >= 0; i--) {
-    randomNumber = numbers[i];
-    numbers.splice(i, 1);
-  }
+  return numbers;
+};
+
+const generateNonRepeatingRandom = (numbers) => {
+  const randomNumber = numbers.splice(POSTS_AMOUNT - numbers.length, (POSTS_AMOUNT - numbers.length) + 1);
   return randomNumber;
 };
 
@@ -79,33 +81,51 @@ const createComment = () => {
   return comment;
 };
 
-const createCommentsArray = (commentsAmount) => {
+const createCommentsArray = () => {
   let comments = [];
-  for (let i = 0; i < commentsAmount; i++) {
+  for (let i = 0; i < COMMENTS_AMOUNT_MAX; i++) {
     const comment = createComment();
     comments.push(comment);
   }
   return comments;
 };
 
-const createPost = (description, commentsAmount) => {
+const createPost = (description) => {
   const post = {};
-  const urlNumber = generateNonRepeatingRandom(URL_NUMBER_MIN, URL_NUMBER_MAX);
+  const urlNumbers = generateNumbers(URL_NUMBER_MIN, URL_NUMBER_MAX);
+  const urlNumber = generateNonRepeatingRandom(urlNumbers);
   const likesNumber = generateRandom(URL_LIKES_MIN, URL_LIKES_MAX);
   post.url = `photos/${urlNumber}.jpg`;
   post.description = `${description}`;
   post.likes = likesNumber;
-  post.comments = createCommentsArray(commentsAmount);
+  post.comments = createCommentsArray();
   return post;
 };
 
-const createPostsArray = (description, commentsAmount) => {
-  let postsArray = [];
+let postsArray = [];
+const createPostsArray = (description) => {
   for (let i = 0; i < POSTS_AMOUNT; i++) {
-    const post = createPost(description, commentsAmount);
+    const post = createPost(description);
     postsArray.push(post);
   }
   return postsArray;
 };
 
-createPostsArray(`kek`, 2);
+postsArray = createPostsArray(`Красивая фотография этого утра.`);
+
+const pictureTemplate = document.querySelector(`#picture`).content;
+
+const createPicture = (post) => {
+  const picture = pictureTemplate.cloneNode(true);
+  picture.querySelector(`.picture__img`).src = post.url;
+  picture.querySelector(`.picture__likes`).textContent = post.likes;
+  picture.querySelector(`.picture__comments`).textContent = generateRandom(COMMENTS_AMOUNT_MIN, COMMENTS_AMOUNT_MAX);
+  return picture;
+};
+
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < postsArray.length; i++) {
+  fragment.appendChild(createPicture(postsArray[i]));
+}
+const picturesSection = document.querySelector(`.pictures`);
+picturesSection.appendChild(fragment);
