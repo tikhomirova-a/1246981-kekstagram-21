@@ -12,6 +12,23 @@ const COMMENT_AUTHOR_MIN = 0;
 const COMMENT_AUTHOR_MAX = 5;
 const COMMENTS_AMOUNT_MAX = 10;
 const COMMENTS_AMOUNT_MIN = 0;
+const COMMENT_PHRASES = [
+  `Всё отлично!`,
+  `В целом всё неплохо. Но не всё.`,
+  `Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.`,
+  `Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.`,
+  `Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.`,
+  `Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!`
+];
+
+const COMMENT_AUTHOR_NAMES = [
+  `Вера`,
+  `Бэла`,
+  `Григорий Александрович`,
+  `Мэри`,
+  `Михаил`,
+  `Максим Максимович`
+];
 
 const generateRandom = (min, max, arr) => {
   min = Math.ceil(min);
@@ -46,42 +63,24 @@ const generateNumbers = (min, max) => {
   return numbers;
 };
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
 const generateNonRepeatingRandom = (numbers) => {
-  const randomNumber = numbers.splice(POSTS_AMOUNT - numbers.length, (POSTS_AMOUNT - numbers.length) + 1);
-  return randomNumber;
+  const numberId = getRandomInt(numbers.length);
+  return numbers.splice(numberId, 1);
 };
-
-const commentPhrases = [
-  `Всё отлично!`,
-  `В целом всё неплохо. Но не всё.`,
-  `Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.`,
-  `Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.`,
-  `Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.`,
-  `Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!`
-];
-
-const commentAuthorNames = [
-  `Вера`,
-  `Бэла`,
-  `Григорий Александрович`,
-  `Мэри`,
-  `Михаил`,
-  `Максим Максимович`
-];
 
 const createComment = () => {
-  const avatarNumber = generateRandom(AVATAR_NUMBER_MIN, AVATAR_NUMBER_MAX);
-  const commentText = generateRandom(COMMENT_NUMBER_MIN, COMMENT_NUMBER_MAX, commentPhrases);
-  const commentAuthor = generateRandom(COMMENT_AUTHOR_MIN, COMMENT_AUTHOR_MAX, commentAuthorNames);
-  const comment = {
-    avatar: `img/avatar-${avatarNumber}.svg`,
-    message: `${commentText}`,
-    name: `${commentAuthor}`
+  return {
+    avatar: `img/avatar-${generateRandom(AVATAR_NUMBER_MIN, AVATAR_NUMBER_MAX)}.svg`,
+    message: generateRandom(COMMENT_NUMBER_MIN, COMMENT_NUMBER_MAX, COMMENT_PHRASES),
+    name: generateRandom(COMMENT_AUTHOR_MIN, COMMENT_AUTHOR_MAX, COMMENT_AUTHOR_NAMES)
   };
-  return comment;
 };
 
-const createCommentsArray = () => {
+const createComments = () => {
   let comments = [];
   for (let i = 0; i < COMMENTS_AMOUNT_MAX; i++) {
     const comment = createComment();
@@ -90,28 +89,26 @@ const createCommentsArray = () => {
   return comments;
 };
 
-const createPost = (description) => {
-  const post = {};
+const createPost = (description, urlNumbers) => {
+  return {
+    url: `photos/${generateNonRepeatingRandom(urlNumbers)}.jpg`,
+    description: `${description}`,
+    likes: generateRandom(URL_LIKES_MIN, URL_LIKES_MAX),
+    comments: createComments()
+  };
+};
+
+let posts = [];
+const createPosts = (description) => {
   const urlNumbers = generateNumbers(URL_NUMBER_MIN, URL_NUMBER_MAX);
-  const urlNumber = generateNonRepeatingRandom(urlNumbers);
-  const likesNumber = generateRandom(URL_LIKES_MIN, URL_LIKES_MAX);
-  post.url = `photos/${urlNumber}.jpg`;
-  post.description = `${description}`;
-  post.likes = likesNumber;
-  post.comments = createCommentsArray();
-  return post;
-};
-
-let postsArray = [];
-const createPostsArray = (description) => {
   for (let i = 0; i < POSTS_AMOUNT; i++) {
-    const post = createPost(description);
-    postsArray.push(post);
+    const post = createPost(description, urlNumbers);
+    posts.push(post);
   }
-  return postsArray;
+  return posts;
 };
 
-postsArray = createPostsArray(`Красивая фотография этого утра.`);
+posts = createPosts(`Красивая фотография этого утра.`);
 
 const pictureTemplate = document.querySelector(`#picture`).content;
 
@@ -124,8 +121,8 @@ const createPicture = (post) => {
 };
 
 const fragment = document.createDocumentFragment();
-for (let i = 0; i < postsArray.length; i++) {
-  fragment.appendChild(createPicture(postsArray[i]));
+for (let i = 0; i < posts.length; i++) {
+  fragment.appendChild(createPicture(posts[i]));
 }
 const picturesSection = document.querySelector(`.pictures`);
 picturesSection.appendChild(fragment);
