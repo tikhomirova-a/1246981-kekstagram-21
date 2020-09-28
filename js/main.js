@@ -94,7 +94,7 @@ const createPost = (description, urlNumbers) => {
     url: `photos/${generateNonRepeatingRandom(urlNumbers)}.jpg`,
     description: `${description}`,
     likes: generateRandom(URL_LIKES_MIN, URL_LIKES_MAX),
-    comments: createComments()
+    comments: createComments().slice(generateRandom(COMMENTS_AMOUNT_MIN, COMMENTS_AMOUNT_MAX))
   };
 };
 
@@ -108,7 +108,7 @@ const createPosts = (description) => {
   return posts;
 };
 
-posts = createPosts(`Красивая фотография этого утра.`);
+posts = createPosts(`Красивая фотография, сделанная вчера.`);
 
 const pictureTemplate = document.querySelector(`#picture`).content;
 
@@ -116,7 +116,7 @@ const createPicture = (post) => {
   const picture = pictureTemplate.cloneNode(true);
   picture.querySelector(`.picture__img`).src = post.url;
   picture.querySelector(`.picture__likes`).textContent = post.likes;
-  picture.querySelector(`.picture__comments`).textContent = generateRandom(COMMENTS_AMOUNT_MIN, COMMENTS_AMOUNT_MAX);
+  picture.querySelector(`.picture__comments`).textContent = post.comments.length;
   return picture;
 };
 
@@ -126,3 +126,29 @@ for (let i = 0; i < posts.length; i++) {
 }
 const picturesSection = document.querySelector(`.pictures`);
 picturesSection.appendChild(fragment);
+
+const bigPicture = document.querySelector(`.big-picture`);
+bigPicture.classList.remove(`hidden`);
+
+bigPicture.querySelector(`.big-picture__img > img`).src = posts[0].url;
+bigPicture.querySelector(`.likes-count`).textContent = posts[0].likes;
+bigPicture.querySelector(`.comments-count`).textContent = posts[0].comments.length + 2;
+bigPicture.querySelector(`.social__caption`).textContent = posts[0].description;
+
+const commentList = bigPicture.querySelector(`.social__comments`);
+
+const renderComments = () => {
+  for (let i = 0; i < posts[0].comments.length; i++) {
+    const newCommentItem = commentList.querySelector(`.social__comment`).cloneNode(true);
+    newCommentItem.querySelector(`img`).src = posts[0].comments[i].avatar;
+    newCommentItem.querySelector(`img`).alt = posts[0].comments[i].name;
+    newCommentItem.querySelector(`.social__text`).textContent = posts[0].comments[i].message;
+    commentList.appendChild(newCommentItem);
+  }
+  return commentList;
+};
+renderComments();
+
+bigPicture.querySelector(`.social__comment-count`).classList.add(`hidden`);
+bigPicture.querySelector(`.comments-loader`).classList.add(`hidden`);
+document.querySelector(`body`).classList.add(`.modal-open`);
