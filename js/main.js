@@ -6,7 +6,7 @@ const URL_LIKES_MAX = 255;
 const POSTS_AMOUNT = 25;
 const AVATAR_NUMBER_MIN = 1;
 const AVATAR_NUMBER_MAX = 6;
-const COMMENT_NUMBER_MIN = 0;
+// const COMMENT_NUMBER_MIN = 0;
 const COMMENT_NUMBER_MAX = 5;
 const COMMENT_AUTHOR_MIN = 0;
 const COMMENT_AUTHOR_MAX = 5;
@@ -30,7 +30,7 @@ const COMMENT_AUTHOR_NAMES = [
   `Максим Максимович`
 ];
 
-const generateRandom = (min, max, arr) => {
+const generateRandom = (min = 0, max, arr) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   let result = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -72,18 +72,16 @@ const generateNonRepeatingRandom = (numbers) => {
   return numbers.splice(numberId, 1);
 };
 
-const createComment = () => {
-  return {
-    avatar: `img/avatar-${generateRandom(AVATAR_NUMBER_MIN, AVATAR_NUMBER_MAX)}.svg`,
-    message: generateRandom(COMMENT_NUMBER_MIN, COMMENT_NUMBER_MAX, COMMENT_PHRASES),
-    name: generateRandom(COMMENT_AUTHOR_MIN, COMMENT_AUTHOR_MAX, COMMENT_AUTHOR_NAMES)
-  };
-};
-
 const createComments = () => {
   let comments = [];
   for (let i = 0; i < COMMENTS_AMOUNT_MAX; i++) {
-    const comment = createComment();
+    const comment = (function () {
+      return {
+        avatar: `img/avatar-${generateRandom(AVATAR_NUMBER_MIN, AVATAR_NUMBER_MAX)}.svg`,
+        message: generateRandom(0, COMMENT_NUMBER_MAX, COMMENT_PHRASES),
+        name: generateRandom(COMMENT_AUTHOR_MIN, COMMENT_AUTHOR_MAX, COMMENT_AUTHOR_NAMES)
+      };
+    })();
     comments.push(comment);
   }
   return comments;
@@ -98,17 +96,17 @@ const createPost = (description, urlNumbers) => {
   };
 };
 
-let posts = [];
-const createPosts = (description) => {
+let description = `Красивая фотография, сделанная вчера.`;
+
+const posts = (function () {
   const urlNumbers = generateNumbers(URL_NUMBER_MIN, URL_NUMBER_MAX);
+  let postElements = [];
   for (let i = 0; i < POSTS_AMOUNT; i++) {
     const post = createPost(description, urlNumbers);
-    posts.push(post);
+    postElements.push(post);
   }
-  return posts;
-};
-
-posts = createPosts(`Красивая фотография, сделанная вчера.`);
+  return postElements;
+})();
 
 const pictureTemplate = document.querySelector(`#picture`).content;
 
@@ -128,14 +126,8 @@ const picturesSection = document.querySelector(`.pictures`);
 picturesSection.appendChild(fragment);
 
 const bigPicture = document.querySelector(`.big-picture`);
-bigPicture.classList.remove(`hidden`);
-
-bigPicture.querySelector(`.big-picture__img > img`).src = posts[0].url;
-bigPicture.querySelector(`.likes-count`).textContent = posts[0].likes;
-bigPicture.querySelector(`.comments-count`).textContent = posts[0].comments.length + 2;
-bigPicture.querySelector(`.social__caption`).textContent = posts[0].description;
-
 const commentList = bigPicture.querySelector(`.social__comments`);
+const body = document.querySelector(`body`);
 
 const renderComments = () => {
   for (let i = 0; i < posts[0].comments.length; i++) {
@@ -145,10 +137,97 @@ const renderComments = () => {
     newCommentItem.querySelector(`.social__text`).textContent = posts[0].comments[i].message;
     commentList.appendChild(newCommentItem);
   }
+  commentList.children[0].remove();
+  commentList.children[0].remove();
   return commentList;
 };
-renderComments();
 
-bigPicture.querySelector(`.social__comment-count`).classList.add(`hidden`);
-bigPicture.querySelector(`.comments-loader`).classList.add(`hidden`);
-document.querySelector(`body`).classList.add(`.modal-open`);
+const showPicture = () => {
+  bigPicture.classList.remove(`hidden`);
+
+  bigPicture.querySelector(`.big-picture__img > img`).src = posts[0].url;
+  bigPicture.querySelector(`.likes-count`).textContent = posts[0].likes;
+  bigPicture.querySelector(`.comments-count`).textContent = posts[0].comments.length;
+  bigPicture.querySelector(`.social__caption`).textContent = posts[0].description;
+  renderComments();
+  bigPicture.querySelector(`.social__comment-count`).classList.add(`hidden`);
+  bigPicture.querySelector(`.comments-loader`).classList.add(`hidden`);
+  body.classList.add(`.modal-open`);
+};
+
+const uploadOpen = document.querySelector(`#upload-file`);
+const uploadClose = document.querySelector(`#upload-cancel`);
+const uploadedImage = document.querySelector(`.img-upload__overlay`);
+
+const onUploadedImageEscPress = (evt) => {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closeUploadedImage();
+  }
+};
+
+const openUploadedImage = () => {
+  uploadedImage.classList.remove(`hidden`);
+  body.classList.add(`modal-open`);
+  document.addEventListener(`keydown`, onUploadedImageEscPress);
+  scaleControlSmaller.addEventListener(`click`, onScaleControlSmallerClick);
+  scaleControlBigger.addEventListener(`click`, onScaleControlBiggerClick);
+};
+
+const closeUploadedImage = () => {
+  uploadedImage.classList.add(`hidden`);
+  body.classList.remove(`modal-open`);
+  document.removeEventListener(`keydown`, onUploadedImageEscPress);
+  scaleControlSmaller.removeEventListener(`click`, onScaleControlSmallerClick);
+  scaleControlBigger.removeEventListener(`click`, onScaleControlBiggerClick);
+  uploadOpen.value = ``;
+};
+
+uploadOpen.addEventListener(`change`, function () {
+  openUploadedImage();
+});
+
+uploadClose.addEventListener(`click`, function () {
+  closeUploadedImage();
+});
+
+const scaleControlSmaller = uploadedImage.querySelector(`.scale__control--smaller`);
+const scaleControlBigger = uploadedImage.querySelector(`.scale__control--bigger`);
+const scaleControlInput = uploadedImage.querySelector(`.scale__control--value`);
+let scaleSize = Number(scaleControlInput.value.split(`%`)[0]);
+const uploadedImagePreview = uploadedImage.querySelector(`.img-upload__preview > img`);
+
+const makeImageBigger = () => {
+  if (scaleSize < 100) {
+    scaleSize += 25;
+    if (scaleSize >= 100) {
+      scaleSize = 100;
+    }
+    scaleControlInput.value = scaleSize + `%`;
+  }
+};
+
+const makeImageSmaller = () => {
+  if (scaleSize > 25) {
+    scaleSize -= 25;
+    if (scaleSize <= 25) {
+      scaleSize = 25;
+    }
+    scaleControlInput.value = scaleSize + `%`;
+  }
+};
+
+const changeScale = () => {
+  uploadedImagePreview.style.transform = `scale(${scaleSize / 100})`;
+};
+
+const onScaleControlBiggerClick = () => {
+  makeImageBigger();
+  changeScale();
+};
+
+const onScaleControlSmallerClick = () => {
+  makeImageSmaller();
+  changeScale();
+};
+
