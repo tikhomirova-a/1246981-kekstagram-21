@@ -582,6 +582,7 @@ main {
 
   background-color: #ffe753;
   border-radius: 50%;
+  border: none;
 
   -webkit-transform: translateX(-50%);
       -ms-transform: translateX(-50%);

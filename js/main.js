@@ -29,6 +29,9 @@ const COMMENT_AUTHOR_NAMES = [
   `Михаил`,
   `Максим Максимович`
 ];
+const DEFAULT_EFFECT_LEVEL = 100;
+const MIN_HASHTAG_LENGTH = 2;
+const MAX_HASHTAG_LENGTH = 20;
 
 const generateRandom = (min = 0, max, arr) => {
   min = Math.ceil(min);
@@ -125,6 +128,7 @@ for (let i = 0; i < posts.length; i++) {
 const picturesSection = document.querySelector(`.pictures`);
 picturesSection.appendChild(fragment);
 
+const thumbnailPictures = document.querySelectorAll(`.picture`);
 const bigPicture = document.querySelector(`.big-picture`);
 const commentList = bigPicture.querySelector(`.social__comments`);
 const body = document.querySelector(`body`);
@@ -155,12 +159,20 @@ const showPicture = () => {
   body.classList.add(`.modal-open`);
 };
 
+const onThumbnailPictureClick = () => {
+  showPicture();
+};
+
+for (let i = 0; i < thumbnailPictures.length; i++) {
+  thumbnailPictures[i].addEventListener(`click`, onThumbnailPictureClick);
+}
+
 const uploadOpen = document.querySelector(`#upload-file`);
 const uploadClose = document.querySelector(`#upload-cancel`);
 const uploadedImage = document.querySelector(`.img-upload__overlay`);
 
 const onUploadedImageEscPress = (evt) => {
-  if (evt.key === `Escape`) {
+  if (evt.key === `Escape`) { // TODO don't close if hashtagInput has focus
     evt.preventDefault();
     closeUploadedImage();
   }
@@ -172,6 +184,9 @@ const openUploadedImage = () => {
   document.addEventListener(`keydown`, onUploadedImageEscPress);
   scaleControlSmaller.addEventListener(`click`, onScaleControlSmallerClick);
   scaleControlBigger.addEventListener(`click`, onScaleControlBiggerClick);
+  uploadedImage.addEventListener(`change`, onEffectInputChange);
+  hashtagInput.addEventListener(`input`, onHashtagInputInput);
+  hashtagInput.addEventListener(`submit`, onHashtagInputSubmit);
 };
 
 const closeUploadedImage = () => {
@@ -180,15 +195,20 @@ const closeUploadedImage = () => {
   document.removeEventListener(`keydown`, onUploadedImageEscPress);
   scaleControlSmaller.removeEventListener(`click`, onScaleControlSmallerClick);
   scaleControlBigger.removeEventListener(`click`, onScaleControlBiggerClick);
+  uploadedImage.removeEventListener(`change`, onEffectInputChange);
+  hashtagInput.removeEventListener(`input`, onHashtagInputInput);
+  hashtagInput.removeEventListener(`submit`, onHashtagInputSubmit);
   uploadOpen.value = ``;
+};
+
+const onUploadCloseClick = () => {
+  closeUploadedImage();
+  uploadClose.removeEventListener(`click`, onUploadCloseClick);
 };
 
 uploadOpen.addEventListener(`change`, function () {
   openUploadedImage();
-});
-
-uploadClose.addEventListener(`click`, function () {
-  closeUploadedImage();
+  uploadClose.addEventListener(`click`, onUploadCloseClick);
 });
 
 const scaleControlSmaller = uploadedImage.querySelector(`.scale__control--smaller`);
@@ -231,3 +251,85 @@ const onScaleControlSmallerClick = () => {
   changeScale();
 };
 
+const effectPin = uploadedImage.querySelector(`.effect-level__pin`);
+const effectLevelInput = uploadedImage.querySelector(`.effect-level__value`);
+
+const calculateEffectLevel = () => {
+  effectLevelInput.value = Math.round(effectPin.offsetLeft / effectPin.offsetParent.offsetWidth * 100);
+  return Number(effectLevelInput.value);
+};
+
+const applyEffectLevel = () => {
+  if (uploadedImagePreview.classList.contains(`effects__preview--chrome`)) {
+    uploadedImagePreview.style.filter = `grayscale(${calculateEffectLevel() / 100})`;
+  } else if (uploadedImagePreview.classList.contains(`effects__preview--sepia`)) {
+    uploadedImagePreview.style.filter = `sepia(${calculateEffectLevel() / 100})`;
+  } else if (uploadedImagePreview.classList.contains(`effects__preview--marvin`)) {
+    uploadedImagePreview.style.filter = `invert(${calculateEffectLevel()}%)`;
+  } else if (uploadedImagePreview.classList.contains(`effects__preview--phobos`)) {
+    uploadedImagePreview.style.filter = `blur(${calculateEffectLevel() * 3 / 100}px)`;
+  } else if (uploadedImagePreview.classList.contains(`effects__preview--heat`)) {
+    uploadedImagePreview.style.filter = `brightness(${calculateEffectLevel() * 3 / 100})`; // TODO brightness from 1 to 3
+  }
+};
+
+effectPin.addEventListener(`mouseup`, function () {
+  calculateEffectLevel();
+  applyEffectLevel();
+});
+
+const resetEffectLevel = () => {
+  effectLevelInput.value = DEFAULT_EFFECT_LEVEL;
+  if (!uploadedImagePreview.classList.contains(`effects__preview--^`)) {
+    uploadedImagePreview.style.filter = ``;
+  }
+};
+
+const effectSlider = uploadedImage.querySelector(`.effect-level`);
+
+const onEffectInputChange = (evt) => {
+  if (evt.target && evt.target.matches(`input[type='radio']`)) {
+    uploadedImagePreview.className = ``;
+    resetEffectLevel();
+    if (evt.target.value !== `none`) {
+      effectSlider.classList.remove(`hidden`);
+      uploadedImagePreview.classList.add(`effects__preview--${evt.target.value}`);
+    } else {
+      effectSlider.classList.add(`hidden`);
+    }
+  }
+};
+
+const hashtagInput = uploadedImage.querySelector(`.text__hashtags`);
+
+const onHashtagInputInput = () => {
+  const hashtags = hashtagInput.value.split(` `);
+  for (let i = 0; i < hashtags.length; i++) {
+    const re = /^#[\w]*$/;
+    re.test(hashtags[i]);
+    if (!re.test(hashtags[i])) {
+      hashtagInput.setCustomValidity(`Хэштег должен начинаться с #, а затем состоять только из цифр или английских букв.`);
+    } else if (hashtags[i].length > MAX_HASHTAG_LENGTH) {
+      hashtagInput.setCustomValidity(`Удалите ` + (hashtags[i].length - MAX_HASHTAG_LENGTH) + ` симв.`);
+    } else if (hashtags[i].length < MIN_HASHTAG_LENGTH && hashtags.length <= 5) {
+      hashtagInput.setCustomValidity(`Добавьте еще хотя бы ` + (MIN_HASHTAG_LENGTH - hashtags[i].length) + ` симв.`);
+    } else if (hashtags.length > 5) {
+      hashtagInput.setCustomValidity(`Укажите не более пяти хэштегов.`);
+    } else if (i > 0) {
+      for (let j = 1; j <= i; j++) {
+        if (String(hashtags[i]).toLowerCase() === String(hashtags[i - j]).toLowerCase()) {
+          hashtagInput.setCustomValidity(`Хэштеги не должны повторяться.`);
+        }
+      }
+    } else {
+      hashtagInput.setCustomValidity(``);
+    }
+  }
+  hashtagInput.reportValidity();
+};
+
+const onHashtagInputSubmit = (evt) => {
+  if (!hashtagInput.validity.valid) {
+    evt.preventDefault();
+  }
+};
