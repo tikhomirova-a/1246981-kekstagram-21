@@ -30,14 +30,11 @@
   const createComments = () => {
     let comments = [];
     for (let i = 0; i < COMMENTS_AMOUNT_MAX; i++) {
-      const comment = (function () {
-        return {
-          avatar: `img/avatar-${window.numberGenerator.generateRandom(AVATAR_NUMBER_MAX, AVATAR_NUMBER_MIN)}.svg`,
-          message: COMMENT_PHRASES[window.numberGenerator.generateRandom(COMMENT_NUMBER_MAX)],
-          name: COMMENT_AUTHOR_NAMES[window.numberGenerator.generateRandom(COMMENT_AUTHOR_MAX)]
-        };
-      })();
-      comments.push(comment);
+      comments.push({
+        avatar: `img/avatar-${window.numberGenerator.generateRandom(AVATAR_NUMBER_MAX, AVATAR_NUMBER_MIN)}.svg`,
+        message: COMMENT_PHRASES[window.numberGenerator.generateRandom(COMMENT_NUMBER_MAX)],
+        name: COMMENT_AUTHOR_NAMES[window.numberGenerator.generateRandom(COMMENT_AUTHOR_MAX)]
+      });
     }
     return comments;
   };
