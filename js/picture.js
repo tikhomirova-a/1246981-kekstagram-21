@@ -19,6 +19,15 @@
     const picturesSection = document.querySelector(`.pictures`);
     picturesSection.appendChild(fragment);
   };
+  const onSuccess = (posts) => {
+    renderPictures(posts);
+    const thumbnailPictures = document.querySelectorAll(`.picture`);
+    for (let i = 0; i < thumbnailPictures.length; i++) {
+      thumbnailPictures[i].setAttribute(`id`, `#picture${i + 1}`);
+      thumbnailPictures[i].addEventListener(`click`, window.preview.onThumbnailPictureClick);
+      thumbnailPictures[i].addEventListener(`keydown`, window.preview.onThumbnailPictureEnter);
+    }
+  };
 
   const showMessage = (errorMessage) => {
     const loadingError = document.createElement(`div`);
@@ -35,5 +44,5 @@
     loadingError.textContent = errorMessage;
     document.body.insertAdjacentElement(`afterbegin`, loadingError);
   };
-  window.load.getData(URL, renderPictures, showMessage);
+  window.load.getData(URL, onSuccess, showMessage);
 })();

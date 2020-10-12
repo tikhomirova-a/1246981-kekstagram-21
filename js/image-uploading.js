@@ -1,7 +1,8 @@
 'use strict';
 (function () {
   const onUploadedImageEscPress = (evt) => {
-    if (evt.key === `Escape` && document.activeElement !== window.main.hashtagInput) {
+    if (evt.key === `Escape` && document.activeElement !== window.main.hashtagInput
+    && document.activeElement !== window.main.commentInput) {
       evt.preventDefault();
       closeUploadedImage();
     }
