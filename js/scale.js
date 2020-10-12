@@ -1,14 +1,12 @@
 'use strict';
 (function () {
-  const uploadedImage = document.querySelector(`.img-upload__overlay`);
-  const scaleControlSmaller = uploadedImage.querySelector(`.scale__control--smaller`);
-  const scaleControlBigger = uploadedImage.querySelector(`.scale__control--bigger`);
-  const scaleControlInput = uploadedImage.querySelector(`.scale__control--value`);
-  const uploadedImagePreview = uploadedImage.querySelector(`.img-upload__preview > img`);
+  const scaleControlSmaller = window.main.uploadedImage.querySelector(`.scale__control--smaller`);
+  const scaleControlBigger = window.main.uploadedImage.querySelector(`.scale__control--bigger`);
+  const scaleControlInput = window.main.uploadedImage.querySelector(`.scale__control--value`);
   let scaleSize = Number(scaleControlInput.value.split(`%`)[0]);
 
   const changeScale = () => {
-    uploadedImagePreview.style.transform = `scale(${scaleSize / 100})`;
+    window.main.uploadedImagePreview.style.transform = `scale(${scaleSize / 100})`;
   };
 
   const onScaleControlClick = (evt) => {

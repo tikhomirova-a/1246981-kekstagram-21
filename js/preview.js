@@ -3,7 +3,6 @@
   const thumbnailPictures = document.querySelectorAll(`.picture`);
   const bigPicture = document.querySelector(`.big-picture`);
   const commentList = bigPicture.querySelector(`.social__comments`);
-  const body = document.querySelector(`body`);
 
   const renderComments = () => {
     const commentItem = commentList.querySelector(`.social__comment`).cloneNode(true);
@@ -30,7 +29,7 @@
     renderComments();
     bigPicture.querySelector(`.social__comment-count`).classList.add(`hidden`);
     bigPicture.querySelector(`.comments-loader`).classList.add(`hidden`);
-    body.classList.add(`.modal-open`);
+    window.main.body.classList.add(`.modal-open`);
   };
 
   const onThumbnailPictureClick = () => {

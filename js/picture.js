@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  const URL = `https://21.javascript.pages.academy/kekstagram/data`;
   const pictureTemplate = document.querySelector(`#picture`).content;
 
   const createPicture = (post) => {
@@ -10,15 +11,29 @@
     return picture;
   };
 
-  const posts = window.data.posts;
-  const fragment = document.createDocumentFragment();
-  for (let i = 0; i < posts.length; i++) {
-    fragment.appendChild(createPicture(posts[i]));
-  }
-  const picturesSection = document.querySelector(`.pictures`);
-  picturesSection.appendChild(fragment);
-
-  window.picture = {
-    posts
+  const renderPictures = (posts) => {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < posts.length; i++) {
+      fragment.appendChild(createPicture(posts[i]));
+    }
+    const picturesSection = document.querySelector(`.pictures`);
+    picturesSection.appendChild(fragment);
   };
+
+  const showMessage = (errorMessage) => {
+    const loadingError = document.createElement(`div`);
+    loadingError.style = `z-index: 3;`;
+    loadingError.style.position = `absolute`;
+    loadingError.style.top = `10px`;
+    loadingError.style.left = `50%`;
+    loadingError.style.transform = `translate(-50%)`;
+    loadingError.style.width = `max-content`;
+    loadingError.style.padding = `10px 20px`;
+    loadingError.style.fontSize = `18px`;
+    loadingError.style.color = `crimson`;
+    loadingError.style.textTransform = `none`;
+    loadingError.textContent = errorMessage;
+    document.body.insertAdjacentElement(`afterbegin`, loadingError);
+  };
+  window.load.getData(URL, renderPictures, showMessage);
 })();
