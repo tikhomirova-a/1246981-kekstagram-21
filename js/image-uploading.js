@@ -17,6 +17,7 @@
     window.main.effectPin.addEventListener(`mouseup`, window.effect.onEffectPinMouseUp);
     window.main.hashtagInput.addEventListener(`input`, window.validation.onHashtagInputInput);
     window.main.hashtagInput.addEventListener(`submit`, window.validation.onHashtagInputSubmit);
+    window.main.commentInput.addEventListener(`input`, window.validation.onCommentInputInput);
   };
 
   const closeUploadedImage = () => {
@@ -27,6 +28,7 @@
     window.main.uploadedImage.removeEventListener(`change`, window.effect.onEffectInputChange);
     window.main.hashtagInput.removeEventListener(`input`, window.validation.onHashtagInputInput);
     window.main.hashtagInput.removeEventListener(`submit`, window.validation.onHashtagInputSubmit);
+    window.main.commentInput.removeEventListener(`input`, window.validation.onCommentInputInput);
     window.main.uploadOpen.value = ``;
   };
 
