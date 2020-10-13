@@ -1,42 +1,77 @@
 'use strict';
 (function () {
-  const thumbnailPictures = document.querySelectorAll(`.picture`);
   const bigPicture = document.querySelector(`.big-picture`);
   const commentList = bigPicture.querySelector(`.social__comments`);
+  const bigPictureClose = bigPicture.querySelector(`.big-picture__cancel`);
 
-  const renderComments = () => {
+  const renderComments = (post) => {
     const commentItem = commentList.querySelector(`.social__comment`).cloneNode(true);
     while (commentList.firstChild) {
       commentList.removeChild(commentList.firstChild);
     }
-    for (let i = 0; i < window.picture.posts[0].comments.length; i++) {
+    for (let i = 0; i < post.comments.length; i++) {
       const newCommentItem = commentItem.cloneNode(true);
-      newCommentItem.querySelector(`img`).src = window.picture.posts[0].comments[i].avatar;
-      newCommentItem.querySelector(`img`).alt = window.picture.posts[0].comments[i].name;
-      newCommentItem.querySelector(`.social__text`).textContent = window.picture.posts[0].comments[i].message;
+      newCommentItem.querySelector(`img`).src = post.comments[i].avatar;
+      newCommentItem.querySelector(`img`).alt = post.comments[i].name;
+      newCommentItem.querySelector(`.social__text`).textContent = post.comments[i].message;
       commentList.appendChild(newCommentItem);
     }
     return commentList;
   };
 
-  const showPicture = () => {
-    bigPicture.classList.remove(`hidden`);
-
-    bigPicture.querySelector(`.big-picture__img > img`).src = window.picture.posts[0].url;
-    bigPicture.querySelector(`.likes-count`).textContent = window.picture.posts[0].likes;
-    bigPicture.querySelector(`.comments-count`).textContent = window.picture.posts[0].comments.length;
-    bigPicture.querySelector(`.social__caption`).textContent = window.picture.posts[0].description;
-    renderComments();
+  const showPicture = (evt, posts) => {
+    for (let i = 0; i < posts.length; i++) {
+      if (evt.target.parentElement.getAttribute(`id`) === `#picture${i + 1}` || evt.target.getAttribute(`id`) === `#picture${i + 1}`) {
+        bigPicture.querySelector(`.big-picture__img > img`).src = posts[i].url;
+        bigPicture.querySelector(`.likes-count`).textContent = posts[i].likes;
+        bigPicture.querySelector(`.comments-count`).textContent = posts[i].comments.length;
+        bigPicture.querySelector(`.social__caption`).textContent = posts[i].description;
+        renderComments(posts[i]);
+      }
+    }
     bigPicture.querySelector(`.social__comment-count`).classList.add(`hidden`);
     bigPicture.querySelector(`.comments-loader`).classList.add(`hidden`);
-    window.main.body.classList.add(`.modal-open`);
+    bigPicture.classList.remove(`hidden`);
+    window.main.body.classList.add(`modal-open`);
   };
 
-  const onThumbnailPictureClick = () => {
-    showPicture();
+  const hidePicture = () => {
+    bigPicture.querySelector(`.social__comment-count`).classList.remove(`hidden`);
+    bigPicture.querySelector(`.comments-loader`).classList.remove(`hidden`);
+    bigPicture.classList.add(`hidden`);
+    window.main.body.classList.remove(`modal-open`);
+    bigPictureClose.removeEventListener(`click`, onBigPictureCloseClick);
+    document.removeEventListener(`keydown`, onBigPictureEsc);
   };
 
-  for (let i = 0; i < thumbnailPictures.length; i++) {
-    thumbnailPictures[i].addEventListener(`click`, onThumbnailPictureClick);
-  }
+  const onThumbnailPictureClick = (evt) => {
+    showPicture(evt, window.load.posts);
+    bigPictureClose.addEventListener(`click`, onBigPictureCloseClick);
+    document.addEventListener(`keydown`, onBigPictureEsc);
+  };
+
+  const onThumbnailPictureEnter = (evt) => {
+    if (evt.key === `Enter`) {
+      evt.preventDefault();
+      showPicture(evt, window.load.posts);
+      bigPictureClose.addEventListener(`click`, onBigPictureCloseClick);
+      document.addEventListener(`keydown`, onBigPictureEsc);
+    }
+  };
+
+  const onBigPictureEsc = (evt) => {
+    if (evt.key === `Escape`) {
+      evt.preventDefault();
+      hidePicture();
+    }
+  };
+
+  const onBigPictureCloseClick = () => {
+    hidePicture();
+  };
+
+  window.preview = {
+    onThumbnailPictureClick,
+    onThumbnailPictureEnter
+  };
 })();

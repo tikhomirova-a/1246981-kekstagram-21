@@ -34,8 +34,18 @@
       evt.preventDefault();
     }
   };
+
+  const onCommentInputInput = () => {
+    if (window.main.commentInput.value.length >= 140) {
+      window.main.commentInput.setCustomValidity(`Введите не более 140 символов.`);
+    } else {
+      window.main.commentInput.setCustomValidity(``);
+    }
+    window.main.commentInput.reportValidity();
+  };
   window.validation = {
     onHashtagInputInput,
-    onHashtagInputSubmit
+    onHashtagInputSubmit,
+    onCommentInputInput
   };
 })();
