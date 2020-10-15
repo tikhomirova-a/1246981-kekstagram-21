@@ -19,16 +19,24 @@
     return commentList;
   };
 
+  const getIndex = (id) => {
+    const element = document.querySelector(`#${id}`);
+    return Array.from(window.picture.thumbnailPictures).indexOf(element);
+  };
+
   const showPicture = (evt, posts) => {
-    for (let i = 0; i < posts.length; i++) {
-      if (evt.target.parentElement.getAttribute(`id`) === `#picture${i + 1}` || evt.target.getAttribute(`id`) === `#picture${i + 1}`) {
-        bigPicture.querySelector(`.big-picture__img > img`).src = posts[i].url;
-        bigPicture.querySelector(`.likes-count`).textContent = posts[i].likes;
-        bigPicture.querySelector(`.comments-count`).textContent = posts[i].comments.length;
-        bigPicture.querySelector(`.social__caption`).textContent = posts[i].description;
-        renderComments(posts[i]);
-      }
+    let id = ``;
+    if (evt.target.tagName === `IMG`) {
+      id = evt.target.parentElement.getAttribute(`id`);
+    } else if (evt.target.tagName === `A`) {
+      id = evt.target.getAttribute(`id`);
     }
+    const index = getIndex(id);
+    bigPicture.querySelector(`.big-picture__img > img`).src = posts[index].url;
+    bigPicture.querySelector(`.likes-count`).textContent = posts[index].likes;
+    bigPicture.querySelector(`.comments-count`).textContent = posts[index].comments.length;
+    bigPicture.querySelector(`.social__caption`).textContent = posts[index].description;
+    renderComments(posts[index]);
     bigPicture.querySelector(`.social__comment-count`).classList.add(`hidden`);
     bigPicture.querySelector(`.comments-loader`).classList.add(`hidden`);
     bigPicture.classList.remove(`hidden`);
@@ -50,15 +58,6 @@
     document.addEventListener(`keydown`, onBigPictureEsc);
   };
 
-  const onThumbnailPictureEnter = (evt) => {
-    if (evt.key === `Enter`) {
-      evt.preventDefault();
-      showPicture(evt, window.load.posts);
-      bigPictureClose.addEventListener(`click`, onBigPictureCloseClick);
-      document.addEventListener(`keydown`, onBigPictureEsc);
-    }
-  };
-
   const onBigPictureEsc = (evt) => {
     if (evt.key === `Escape`) {
       evt.preventDefault();
@@ -71,7 +70,6 @@
   };
 
   window.preview = {
-    onThumbnailPictureClick,
-    onThumbnailPictureEnter
+    onThumbnailPictureClick
   };
 })();

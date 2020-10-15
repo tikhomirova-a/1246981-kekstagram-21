@@ -19,14 +19,25 @@
     const picturesSection = document.querySelector(`.pictures`);
     picturesSection.appendChild(fragment);
   };
+
+  const getGuid = () => {
+    return `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.replace(/[xy]/g, (c) => {
+      let r = (Math.random() * 16) | 0;
+      let v = c === `x` ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
   const onSuccess = (posts) => {
     renderPictures(posts);
     const thumbnailPictures = document.querySelectorAll(`.picture`);
     for (let i = 0; i < thumbnailPictures.length; i++) {
-      thumbnailPictures[i].setAttribute(`id`, `#picture${i + 1}`);
+      thumbnailPictures[i].setAttribute(`id`, `pic${getGuid()}`);
       thumbnailPictures[i].addEventListener(`click`, window.preview.onThumbnailPictureClick);
-      thumbnailPictures[i].addEventListener(`keydown`, window.preview.onThumbnailPictureEnter);
     }
+    window.picture = {
+      thumbnailPictures
+    };
   };
 
   const showMessage = (errorMessage) => {
