@@ -6,6 +6,9 @@
 
   const showFilters = () => {
     filters.classList.remove(`img-filters--inactive`);
+    defaultFilter.addEventListener(`click`, onDefaultFilterClick);
+    randomFilter.addEventListener(`click`, onRandomFilterClick);
+    discussedFilter.addEventListener(`click`, onDiscussedFilterClick);
   };
 
   const updatePictures = (updatedPosts) => {
@@ -20,9 +23,10 @@
     updatePictures(window.load.posts);
     window.util.makeClickable(window.thumbnails.getThumbnailPictures(), window.preview.onThumbnailPictureClick);
   };
+  let updatedPosts;
 
   const showRandom = () => {
-    let updatedPosts = [];
+    updatedPosts = [];
     updatedPosts = window.util.shuffle(window.picture.copyPosts).slice(RANDOM_POSTS_START, RANDOM_POSTS_AMOUNT);
     updatePictures(updatedPosts);
     window.util.makeClickable(window.thumbnails.getThumbnailPictures(), window.preview.onUpdatedThumbnailPictureClick);
@@ -32,7 +36,7 @@
   };
 
   const showDiscussed = () => {
-    let updatedPosts = [];
+    updatedPosts = [];
     updatedPosts = window.picture.copyPosts.sort(function (left, right) {
       if (left.comments.length > right.comments.length) {
         return -1;
@@ -70,10 +74,6 @@
     discussedFilter.classList.add(`img-filters__button--active`);
     showDiscussed();
   });
-
-  defaultFilter.addEventListener(`click`, onDefaultFilterClick);
-  randomFilter.addEventListener(`click`, onRandomFilterClick);
-  discussedFilter.addEventListener(`click`, onDiscussedFilterClick);
 
   window.filter = {
     showFilters
