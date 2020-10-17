@@ -19,19 +19,19 @@
     return commentList;
   };
 
-  const getIndex = (id) => {
+  const getIndex = (id, arr) => {
     const element = document.querySelector(`#${id}`);
-    return Array.from(window.picture.thumbnailPictures).indexOf(element);
+    return arr.indexOf(element);
   };
 
-  const showPicture = (evt, posts) => {
+  const showPicture = (evt, posts, thumbnails) => {
     let id = ``;
     if (evt.target.tagName === `IMG`) {
       id = evt.target.parentElement.getAttribute(`id`);
     } else if (evt.target.tagName === `A`) {
       id = evt.target.getAttribute(`id`);
     }
-    const index = getIndex(id);
+    const index = getIndex(id, thumbnails);
     bigPicture.querySelector(`.big-picture__img > img`).src = posts[index].url;
     bigPicture.querySelector(`.likes-count`).textContent = posts[index].likes;
     bigPicture.querySelector(`.comments-count`).textContent = posts[index].comments.length;
@@ -53,7 +53,13 @@
   };
 
   const onThumbnailPictureClick = (evt) => {
-    showPicture(evt, window.load.posts);
+    showPicture(evt, window.load.posts, window.thumbnails.getThumbnailPictures());
+    bigPictureClose.addEventListener(`click`, onBigPictureCloseClick);
+    document.addEventListener(`keydown`, onBigPictureEsc);
+  };
+
+  const onUpdatedThumbnailPictureClick = (evt) => {
+    showPicture(evt, window.filter.updatedPosts, window.thumbnails.getThumbnailPictures());
     bigPictureClose.addEventListener(`click`, onBigPictureCloseClick);
     document.addEventListener(`keydown`, onBigPictureEsc);
   };
@@ -70,6 +76,7 @@
   };
 
   window.preview = {
-    onThumbnailPictureClick
+    onThumbnailPictureClick,
+    onUpdatedThumbnailPictureClick
   };
 })();

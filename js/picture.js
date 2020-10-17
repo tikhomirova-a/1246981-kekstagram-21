@@ -1,42 +1,14 @@
 'use strict';
 (function () {
   const URL = `https://21.javascript.pages.academy/kekstagram/data`;
-  const pictureTemplate = document.querySelector(`#picture`).content;
-
-  const createPicture = (post) => {
-    const picture = pictureTemplate.cloneNode(true);
-    picture.querySelector(`.picture__img`).src = post.url;
-    picture.querySelector(`.picture__likes`).textContent = post.likes;
-    picture.querySelector(`.picture__comments`).textContent = post.comments.length;
-    return picture;
-  };
-
-  const renderPictures = (posts) => {
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < posts.length; i++) {
-      fragment.appendChild(createPicture(posts[i]));
-    }
-    const picturesSection = document.querySelector(`.pictures`);
-    picturesSection.appendChild(fragment);
-  };
-
-  const getGuid = () => {
-    return `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.replace(/[xy]/g, (c) => {
-      let r = (Math.random() * 16) | 0;
-      let v = c === `x` ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-  };
 
   const onSuccess = (posts) => {
-    renderPictures(posts);
-    const thumbnailPictures = document.querySelectorAll(`.picture`);
-    for (let i = 0; i < thumbnailPictures.length; i++) {
-      thumbnailPictures[i].setAttribute(`id`, `pic${getGuid()}`);
-      thumbnailPictures[i].addEventListener(`click`, window.preview.onThumbnailPictureClick);
-    }
+    const copyPosts = Object.assign([], window.load.posts);
+    window.render.renderPictures(posts);
+    window.util.makeClickable(window.thumbnails.getThumbnailPictures(), window.preview.onThumbnailPictureClick);
+    window.filter.showFilters();
     window.picture = {
-      thumbnailPictures
+      copyPosts
     };
   };
 

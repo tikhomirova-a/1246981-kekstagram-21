@@ -9,6 +9,7 @@
   const body = document.querySelector(`body`);
   const effectPin = uploadedImage.querySelector(`.effect-level__pin`);
   const uploadedImagePreview = uploadedImage.querySelector(`.img-upload__preview > img`);
+  const picturesSection = document.querySelector(`.pictures`);
   window.main = {
     uploadImageForm,
     uploadOpen,
@@ -18,6 +19,7 @@
     commentInput,
     body,
     effectPin,
-    uploadedImagePreview
+    uploadedImagePreview,
+    picturesSection
   };
 })();
