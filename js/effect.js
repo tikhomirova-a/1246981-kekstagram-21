@@ -1,11 +1,15 @@
 'use strict';
 (function () {
   const DEFAULT_EFFECT_LEVEL = 100;
-  const effectLevelInput = window.main.uploadedImage.querySelector(`.effect-level__value`);
+  const MAX_LEFT_X = 0;
   const effectSlider = window.main.uploadedImage.querySelector(`.effect-level`);
+  const effectLevelInput = effectSlider.querySelector(`.effect-level__value`);
+  const effectLine = effectSlider.querySelector(`.effect-level__line`);
+  const effectDepth = effectSlider.querySelector(`.effect-level__depth`);
 
   const calculateEffectLevel = () => {
     effectLevelInput.value = Math.round(window.main.effectPin.offsetLeft / window.main.effectPin.offsetParent.offsetWidth * 100);
+    effectDepth.style.width = `${Number(effectLevelInput.value)}%`;
     return Number(effectLevelInput.value);
   };
 
@@ -28,6 +32,7 @@
     if (!window.main.uploadedImagePreview.classList.contains(`effects__preview--^`)) {
       window.main.uploadedImagePreview.style.filter = ``;
     }
+    effectDepth.style.width = `${DEFAULT_EFFECT_LEVEL}%`;
   };
 
   const onEffectInputChange = (evt) => {
@@ -36,6 +41,8 @@
       resetEffectLevel();
       if (evt.target.value !== `none`) {
         effectSlider.classList.remove(`hidden`);
+        const maxRightX = effectLine.offsetWidth;
+        window.main.effectPin.style.left = `${maxRightX}px`;
         window.main.uploadedImagePreview.classList.add(`effects__preview--${evt.target.value}`);
       } else {
         effectSlider.classList.add(`hidden`);
@@ -43,13 +50,40 @@
     }
   };
 
-  const onEffectPinMouseUp = () => {
-    calculateEffectLevel();
-    applyEffectLevel();
+  const onEffectPinMouseDown = (evt) => {
+    evt.preventDefault();
+    let startX = evt.clientX;
+    const maxRightX = effectLine.offsetWidth;
+
+    const onEffectPinMouseMove = (moveEvt) => {
+      moveEvt.preventDefault();
+      const shiftX = startX - moveEvt.clientX;
+      startX = moveEvt.clientX;
+      let newX = window.main.effectPin.offsetLeft - shiftX;
+      if (newX > maxRightX) {
+        newX = maxRightX;
+      } else if (newX < MAX_LEFT_X) {
+        newX = MAX_LEFT_X;
+      }
+      window.main.effectPin.style.left = `${newX}px`;
+      calculateEffectLevel();
+      applyEffectLevel();
+    };
+
+
+    const onEffectPinMouseUp = (upEvt) => {
+      upEvt.preventDefault();
+      effectSlider.removeEventListener(`mousemove`, onEffectPinMouseMove);
+      document.removeEventListener(`mouseup`, onEffectPinMouseUp);
+    };
+
+    effectSlider.addEventListener(`mousemove`, onEffectPinMouseMove);
+    document.addEventListener(`mouseup`, onEffectPinMouseUp);
   };
+
 
   window.effect = {
     onEffectInputChange,
-    onEffectPinMouseUp
+    onEffectPinMouseDown
   };
 })();
