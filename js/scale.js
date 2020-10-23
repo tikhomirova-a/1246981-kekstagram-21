@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  const DEFAULT_SCALE_SIZE = `100`;
   const scaleControlSmaller = window.main.uploadedImage.querySelector(`.scale__control--smaller`);
   const scaleControlBigger = window.main.uploadedImage.querySelector(`.scale__control--bigger`);
   const scaleControlInput = window.main.uploadedImage.querySelector(`.scale__control--value`);
@@ -7,6 +8,12 @@
 
   const changeScale = () => {
     window.main.uploadedImagePreview.style.transform = `scale(${scaleSize / 100})`;
+  };
+
+  const setScaleToDefault = () => {
+    scaleControlInput.value = `${DEFAULT_SCALE_SIZE}%`;
+    scaleSize = DEFAULT_SCALE_SIZE;
+    changeScale();
   };
 
   const onScaleControlClick = (evt) => {
@@ -28,6 +35,7 @@
   };
 
   window.scale = {
-    onScaleControlClick
+    onScaleControlClick,
+    setScaleToDefault
   };
 })();

@@ -6,6 +6,7 @@
   const effectLevelInput = effectSlider.querySelector(`.effect-level__value`);
   const effectLine = effectSlider.querySelector(`.effect-level__line`);
   const effectDepth = effectSlider.querySelector(`.effect-level__depth`);
+  let maxRightX = 0;
 
   const calculateEffectLevel = () => {
     effectLevelInput.value = Math.round(window.main.effectPin.offsetLeft / window.main.effectPin.offsetParent.offsetWidth * 100);
@@ -27,6 +28,16 @@
     }
   };
 
+
+  const setEffectToOriginal = () => {
+    window.main.uploadedImagePreview.className = ``;
+    window.main.uploadedImage.querySelectorAll(`.effects__radio`).forEach((element) => {
+      element.checked = false;
+    });
+    window.main.uploadedImage.querySelector(`#effect-none`).checked = true;
+    effectSlider.classList.add(`hidden`);
+  };
+
   const resetEffectLevel = () => {
     effectLevelInput.value = DEFAULT_EFFECT_LEVEL;
     if (!window.main.uploadedImagePreview.classList.contains(`effects__preview--^`)) {
@@ -41,7 +52,7 @@
       resetEffectLevel();
       if (evt.target.value !== `none`) {
         effectSlider.classList.remove(`hidden`);
-        const maxRightX = effectLine.offsetWidth;
+        maxRightX = effectLine.offsetWidth;
         window.main.effectPin.style.left = `${maxRightX}px`;
         window.main.uploadedImagePreview.classList.add(`effects__preview--${evt.target.value}`);
       } else {
@@ -53,7 +64,7 @@
   const onEffectPinMouseDown = (evt) => {
     evt.preventDefault();
     let startX = evt.clientX;
-    const maxRightX = effectLine.offsetWidth;
+    maxRightX = effectLine.offsetWidth;
 
     const onEffectPinMouseMove = (moveEvt) => {
       moveEvt.preventDefault();
@@ -83,7 +94,10 @@
 
 
   window.effect = {
+    effectLine,
     onEffectInputChange,
-    onEffectPinMouseDown
+    onEffectPinMouseDown,
+    resetEffectLevel,
+    setEffectToOriginal
   };
 })();
