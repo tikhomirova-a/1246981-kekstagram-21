@@ -1,5 +1,6 @@
 'use strict';
 (function () {
+  const SUCCESS_STATUS = 200;
   const uploadImageForm = document.querySelector(`.img-upload__form`);
   const uploadOpen = uploadImageForm.querySelector(`#upload-file`);
   const uploadedImage = uploadImageForm.querySelector(`.img-upload__overlay`);
@@ -20,6 +21,7 @@
     body,
     effectPin,
     uploadedImagePreview,
-    picturesSection
+    picturesSection,
+    SUCCESS_STATUS
   };
 })();
