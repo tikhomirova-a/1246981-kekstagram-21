@@ -22,10 +22,10 @@
   };
 
   const makeClickable = (arr, cb) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i].setAttribute(`id`, `pic${window.util.getGuid()}`);
-      arr[i].addEventListener(`click`, cb);
-    }
+    arr.forEach((elem) => {
+      elem.setAttribute(`id`, `pic${window.util.getGuid()}`);
+      elem.addEventListener(`click`, cb);
+    });
     arr = Array.from(arr);
   };
 

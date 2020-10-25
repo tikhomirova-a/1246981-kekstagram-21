@@ -9,9 +9,7 @@
     xhr.addEventListener(`load`, function () {
       if (xhr.status === window.main.SUCCESS_STATUS) {
         const data = xhr.response;
-        for (let i = 0; i < data.length; i++) {
-          posts.push(data[i]);
-        }
+        data.forEach((elem) => posts.push(elem));
         onSuccess(data);
         return;
       }

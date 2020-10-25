@@ -1,6 +1,8 @@
 'use strict';
 (function () {
-  const DEFAULT_SCALE_SIZE = `100`;
+  const SCALE_SIZE_MAX = 100;
+  const SCALE_SIZE_MIN = 25;
+  const SCALE_SIZE_STEP = 25;
   const scaleControlSmaller = window.main.uploadedImage.querySelector(`.scale__control--smaller`);
   const scaleControlBigger = window.main.uploadedImage.querySelector(`.scale__control--bigger`);
   const scaleControlInput = window.main.uploadedImage.querySelector(`.scale__control--value`);
@@ -11,23 +13,23 @@
   };
 
   const setScaleToDefault = () => {
-    scaleControlInput.value = `${DEFAULT_SCALE_SIZE}%`;
-    scaleSize = DEFAULT_SCALE_SIZE;
+    scaleControlInput.value = `${SCALE_SIZE_MAX}%`;
+    scaleSize = SCALE_SIZE_MAX;
     changeScale();
   };
 
   const onScaleControlClick = (evt) => {
     if (evt.target === scaleControlBigger) {
-      if (scaleSize < 100) {
-        scaleSize += 25;
+      if (scaleSize < SCALE_SIZE_MAX) {
+        scaleSize += SCALE_SIZE_STEP;
       } else {
-        scaleSize = 100;
+        scaleSize = SCALE_SIZE_MAX;
       }
     } else if (evt.target === scaleControlSmaller) {
-      if (scaleSize > 25) {
-        scaleSize -= 25;
+      if (scaleSize > SCALE_SIZE_MIN) {
+        scaleSize -= SCALE_SIZE_STEP;
       } else {
-        scaleSize = 25;
+        scaleSize = SCALE_SIZE_MIN;
       }
     }
     scaleControlInput.value = scaleSize + `%`;

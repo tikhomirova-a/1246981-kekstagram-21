@@ -9,13 +9,13 @@
     while (commentList.firstChild) {
       commentList.removeChild(commentList.firstChild);
     }
-    for (let i = 0; i < post.comments.length; i++) {
+    post.comments.forEach((comment) => {
       const newCommentItem = commentItem.cloneNode(true);
-      newCommentItem.querySelector(`img`).src = post.comments[i].avatar;
-      newCommentItem.querySelector(`img`).alt = post.comments[i].name;
-      newCommentItem.querySelector(`.social__text`).textContent = post.comments[i].message;
+      newCommentItem.querySelector(`img`).src = comment.avatar;
+      newCommentItem.querySelector(`img`).alt = comment.name;
+      newCommentItem.querySelector(`.social__text`).textContent = comment.message;
       commentList.appendChild(newCommentItem);
-    }
+    });
     return commentList;
   };
 

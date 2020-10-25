@@ -13,9 +13,9 @@
 
   const renderPictures = (posts) => {
     const fragment = document.createDocumentFragment();
-    for (let i = 0; i < posts.length; i++) {
-      fragment.appendChild(createPicture(posts[i]));
-    }
+    posts.forEach((post) => {
+      fragment.appendChild(createPicture(post));
+    });
     window.main.picturesSection.appendChild(fragment);
   };
 
