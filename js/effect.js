@@ -28,7 +28,6 @@
     }
   };
 
-
   const setEffectToOriginal = () => {
     window.main.uploadedImagePreview.className = ``;
     window.main.uploadedImage.querySelectorAll(`.effects__radio`).forEach((element) => {

@@ -10,7 +10,7 @@
       if (lastTimeout) {
         window.clearTimeout(lastTimeout);
       }
-      lastTimeout = window.setTimeout(function () {
+      lastTimeout = window.setTimeout(() => {
         cb(...parameters);
       }, DEBOUNCE_INTERVAL_MS);
     };

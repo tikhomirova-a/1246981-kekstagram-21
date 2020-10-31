@@ -6,7 +6,7 @@
     const xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
 
-    xhr.addEventListener(`load`, function () {
+    xhr.addEventListener(`load`, () => {
       if (xhr.status === window.main.SUCCESS_STATUS) {
         onSuccess();
         return;

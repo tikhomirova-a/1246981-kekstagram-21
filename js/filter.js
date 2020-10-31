@@ -57,19 +57,19 @@
   const randomFilter = filters.querySelector(`#filter-random`);
   const discussedFilter = filters.querySelector(`#filter-discussed`);
 
-  const onDefaultFilterClick = window.debounce.debounce(function () {
+  const onDefaultFilterClick = window.debounce.debounce(() => {
     filters.querySelectorAll(`.img-filters__button`).forEach((element) => element.classList.remove(`img-filters__button--active`));
     defaultFilter.classList.add(`img-filters__button--active`);
     showDefault();
   });
 
-  const onRandomFilterClick = window.debounce.debounce(function () {
+  const onRandomFilterClick = window.debounce.debounce(() => {
     filters.querySelectorAll(`.img-filters__button`).forEach((element) => element.classList.remove(`img-filters__button--active`));
     randomFilter.classList.add(`img-filters__button--active`);
     showRandom();
   });
 
-  const onDiscussedFilterClick = window.debounce.debounce(function () {
+  const onDiscussedFilterClick = window.debounce.debounce(() => {
     filters.querySelectorAll(`.img-filters__button`).forEach((element) => element.classList.remove(`img-filters__button--active`));
     discussedFilter.classList.add(`img-filters__button--active`);
     showDiscussed();

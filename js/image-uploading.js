@@ -91,7 +91,7 @@
     window.main.uploadClose.removeEventListener(`click`, onUploadCloseClick);
   };
 
-  window.main.uploadOpen.addEventListener(`change`, function () {
+  window.main.uploadOpen.addEventListener(`change`, () => {
     openUploadedImage();
     window.main.uploadClose.addEventListener(`click`, onUploadCloseClick);
   });
