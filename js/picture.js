@@ -1,6 +1,6 @@
 'use strict';
 
-const URL = `https://21.javascript.pages.academy/kekstagram/data`;
+const DATA_URL = `https://21.javascript.pages.academy/kekstagram/data`;
 
 const onSuccess = (posts) => {
   const copyPosts = Object.assign([], window.load.posts);
@@ -27,4 +27,4 @@ const showMessage = (errorMessage) => {
   loadingError.textContent = errorMessage;
   document.body.insertAdjacentElement(`afterbegin`, loadingError);
 };
-window.load.getData(URL, onSuccess, showMessage);
+window.load.getData(DATA_URL, onSuccess, showMessage);
