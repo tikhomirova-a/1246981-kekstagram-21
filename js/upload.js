@@ -1,24 +1,23 @@
 'use strict';
-(function () {
-  const URL = `https://21.javascript.pages.academy/kekstagram`;
 
-  const upload = (data, onSuccess, onError) => {
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = `json`;
+const URL = `https://21.javascript.pages.academy/kekstagram`;
 
-    xhr.addEventListener(`load`, function () {
-      if (xhr.status === window.main.SUCCESS_STATUS) {
-        onSuccess();
-        return;
-      }
-      onError();
-    });
+const upload = (data, onSuccess, onError) => {
+  const xhr = new XMLHttpRequest();
+  xhr.responseType = `json`;
 
-    xhr.open(`POST`, URL);
-    xhr.send(data);
-  };
+  xhr.addEventListener(`load`, () => {
+    if (xhr.status === window.main.SUCCESS_STATUS) {
+      onSuccess();
+      return;
+    }
+    onError();
+  });
 
-  window.upload = {
-    upload
-  };
-})();
+  xhr.open(`POST`, URL);
+  xhr.send(data);
+};
+
+window.upload = {
+  upload
+};
