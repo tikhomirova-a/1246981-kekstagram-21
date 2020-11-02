@@ -1,6 +1,6 @@
 'use strict';
 
-const URL = `https://21.javascript.pages.academy/kekstagram`;
+const SERVER_URL = `https://21.javascript.pages.academy/kekstagram`;
 
 const upload = (data, onSuccess, onError) => {
   const xhr = new XMLHttpRequest();
@@ -14,7 +14,7 @@ const upload = (data, onSuccess, onError) => {
     onError();
   });
 
-  xhr.open(`POST`, URL);
+  xhr.open(`POST`, SERVER_URL);
   xhr.send(data);
 };
 

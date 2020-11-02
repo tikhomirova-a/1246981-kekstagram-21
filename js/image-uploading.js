@@ -1,5 +1,10 @@
 'use strict';
 
+const FILE_TYPES = [`image/png`, `image/jpeg`, `image/gif`];
+const UPLOAD_TIMEOUT = 10000;
+const BYTES_IN_1MB = 1048576;
+const MAX_FILE_SIZE_MB = 10;
+
 const onUploadedImageEscPress = (evt) => {
   if (evt.key === `Escape` && document.activeElement !== window.main.hashtagInput
     && document.activeElement !== window.main.commentInput) {
@@ -60,6 +65,38 @@ const onFormSubmit = (evt) => {
 };
 
 const openUploadedImage = () => {
+  const file = window.main.uploadOpen.files[0];
+  const fileType = file.type;
+  const matches = FILE_TYPES.some((type) => {
+    return fileType === type;
+  });
+  const fileSizeInMb = file.size / BYTES_IN_1MB;
+  if (matches && fileSizeInMb <= MAX_FILE_SIZE_MB) {
+    const reader = new FileReader();
+    reader.addEventListener(`load`, () => {
+      window.main.uploadedImagePreview.src = reader.result;
+      const backgroundImage = `url(${reader.result})`;
+      const fileThumbnails = window.main.uploadedImage.querySelectorAll(`.effects__preview`);
+
+      Array.from(fileThumbnails).forEach((thumbnail) => {
+        thumbnail.style.backgroundImage = backgroundImage;
+      });
+    });
+    reader.readAsDataURL(file);
+
+    reader.addEventListener(`error`, () => {
+      window.util.showMessage(`Ошибка загрузки файла`);
+    });
+
+    reader.addEventListener(`abort`, () => {
+      window.util.showMessage(`Время загрузки файла превысило ${UPLOAD_TIMEOUT / 1000} с`);
+    });
+
+    setTimeout(() => {
+      reader.abort();
+    }, UPLOAD_TIMEOUT);
+  }
+
   window.main.uploadedImage.classList.remove(`hidden`);
   window.main.effectPin.style.left = `${window.effect.effectLine.offsetWidth}px`;
   window.main.body.classList.add(`modal-open`);
@@ -84,6 +121,9 @@ const closeUploadedImage = () => {
   resetForm();
   window.main.uploadedImage.classList.add(`hidden`);
   window.main.body.classList.remove(`modal-open`);
+  if (document.querySelector(`.error-message`)) {
+    window.util.hideMessage();
+  }
 };
 
 const onUploadCloseClick = () => {
