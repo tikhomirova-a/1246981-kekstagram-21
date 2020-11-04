@@ -65,38 +65,6 @@ const onFormSubmit = (evt) => {
 };
 
 const openUploadedImage = () => {
-  const file = window.main.uploadOpen.files[0];
-  const fileType = file.type;
-  const matches = FILE_TYPES.some((type) => {
-    return fileType === type;
-  });
-  const fileSizeInMb = file.size / BYTES_IN_1MB;
-  if (matches && fileSizeInMb <= MAX_FILE_SIZE_MB) {
-    const reader = new FileReader();
-    reader.addEventListener(`load`, () => {
-      window.main.uploadedImagePreview.src = reader.result;
-      const backgroundImage = `url(${reader.result})`;
-      const fileThumbnails = window.main.uploadedImage.querySelectorAll(`.effects__preview`);
-
-      Array.from(fileThumbnails).forEach((thumbnail) => {
-        thumbnail.style.backgroundImage = backgroundImage;
-      });
-    });
-    reader.readAsDataURL(file);
-
-    reader.addEventListener(`error`, () => {
-      window.util.showMessage(`Ошибка загрузки файла`);
-    });
-
-    reader.addEventListener(`abort`, () => {
-      window.util.showMessage(`Время загрузки файла превысило ${UPLOAD_TIMEOUT / 1000} с`);
-    });
-
-    setTimeout(() => {
-      reader.abort();
-    }, UPLOAD_TIMEOUT);
-  }
-
   window.main.uploadedImage.classList.remove(`hidden`);
   window.main.effectPin.style.left = `${window.effect.effectLine.offsetWidth}px`;
   window.main.body.classList.add(`modal-open`);
@@ -131,7 +99,42 @@ const onUploadCloseClick = () => {
   window.main.uploadClose.removeEventListener(`click`, onUploadCloseClick);
 };
 
-window.main.uploadOpen.addEventListener(`change`, () => {
-  openUploadedImage();
+const onUploadOpenChange = () => {
+  const file = window.main.uploadOpen.files[0];
+  const fileType = file.type;
+  const matches = FILE_TYPES.some((type) => {
+    return fileType === type;
+  });
+  const fileSizeInMb = file.size / BYTES_IN_1MB;
+  if (matches && fileSizeInMb <= MAX_FILE_SIZE_MB) {
+    const reader = new FileReader();
+
+    reader.addEventListener(`load`, () => {
+      window.main.uploadedImagePreview.src = reader.result;
+      const backgroundImage = `url(${reader.result})`;
+      const fileThumbnails = window.main.uploadedImage.querySelectorAll(`.effects__preview`);
+
+      Array.from(fileThumbnails).forEach((thumbnail) => {
+        thumbnail.style.backgroundImage = backgroundImage;
+      });
+      openUploadedImage();
+    });
+    reader.readAsDataURL(file);
+
+    reader.addEventListener(`error`, () => {
+      window.util.showMessage(`Ошибка загрузки файла`);
+    });
+
+    reader.addEventListener(`abort`, () => {
+      window.util.showMessage(`Время загрузки файла превысило ${UPLOAD_TIMEOUT / 1000} с`);
+    });
+
+    setTimeout(() => {
+      reader.abort();
+    }, UPLOAD_TIMEOUT);
+  }
+
   window.main.uploadClose.addEventListener(`click`, onUploadCloseClick);
-});
+};
+
+window.main.uploadOpen.addEventListener(`change`, onUploadOpenChange);
