@@ -83,7 +83,7 @@ const onUpdatedThumbnailPictureClick = (evt) => {
 };
 
 const onBigPictureEsc = (evt) => {
-  if (evt.key === `Escape`) {
+  if (evt.key === window.main.ESCAPE) {
     evt.preventDefault();
     hidePicture();
   }

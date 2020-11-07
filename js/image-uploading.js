@@ -1,12 +1,12 @@
 'use strict';
 
 const FILE_TYPES = [`image/png`, `image/jpeg`, `image/gif`];
-const UPLOAD_TIMEOUT = 10000;
+const UPLOAD_TIMEOUT_MS = 10000;
 const BYTES_IN_1MB = 1048576;
 const MAX_FILE_SIZE_MB = 10;
 
 const onUploadedImageEscPress = (evt) => {
-  if (evt.key === `Escape` && document.activeElement !== window.main.hashtagInput
+  if (evt.key === window.main.ESCAPE && document.activeElement !== window.main.hashtagInput
     && document.activeElement !== window.main.commentInput) {
     evt.preventDefault();
     closeUploadedImage();
@@ -34,7 +34,7 @@ const showMessage = (status) => {
   };
 
   const onMessageEsc = (evt) => {
-    if (evt.key === `Escape`) {
+    if (evt.key === window.main.ESCAPE) {
       evt.preventDefault();
       hideMessage();
     }
@@ -126,12 +126,12 @@ const onUploadOpenChange = () => {
     });
 
     reader.addEventListener(`abort`, () => {
-      window.util.showMessage(`Время загрузки файла превысило ${UPLOAD_TIMEOUT / 1000} с`);
+      window.util.showMessage(`Время загрузки файла превысило ${UPLOAD_TIMEOUT_MS / 1000} с`);
     });
 
     setTimeout(() => {
       reader.abort();
-    }, UPLOAD_TIMEOUT);
+    }, UPLOAD_TIMEOUT_MS);
   }
 
   window.main.uploadClose.addEventListener(`click`, onUploadCloseClick);

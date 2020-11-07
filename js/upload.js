@@ -14,7 +14,7 @@ const upload = (data, onSuccess, onError) => {
     onError();
   });
 
-  xhr.open(`POST`, SERVER_URL);
+  xhr.open(window.main.HttpRequestMethod.POST, SERVER_URL);
   xhr.send(data);
 };
 

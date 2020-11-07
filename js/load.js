@@ -24,7 +24,7 @@ const getData = (url, onSuccess, onError) => {
   });
 
   xhr.timeout = TIMEOUT_IN_MS;
-  xhr.open(`GET`, url);
+  xhr.open(window.main.HttpRequestMethod.GET, url);
   xhr.send();
 };
 window.load = {

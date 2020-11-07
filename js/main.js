@@ -1,6 +1,11 @@
 'use strict';
 
 const SUCCESS_STATUS = 200;
+const ESCAPE = `Escape`;
+const HttpRequestMethod = {
+  GET: `GET`,
+  POST: `POST`
+};
 const uploadImageForm = document.querySelector(`.img-upload__form`);
 const uploadOpen = uploadImageForm.querySelector(`#upload-file`);
 const uploadedImage = uploadImageForm.querySelector(`.img-upload__overlay`);
@@ -22,5 +27,7 @@ window.main = {
   effectPin,
   uploadedImagePreview,
   picturesSection,
-  SUCCESS_STATUS
+  SUCCESS_STATUS,
+  ESCAPE,
+  HttpRequestMethod
 };
